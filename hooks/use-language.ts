@@ -1,7 +1,18 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { type Language, languages, translations, type TranslationKey } from "@/lib/i18n"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react"
+import {
+  type Language,
+  languages,
+  translations,
+  type TranslationKey,
+} from "@/lib/i18n"
 
 interface LanguageContextType {
   language: Language
@@ -10,14 +21,16 @@ interface LanguageContextType {
   dir: "ltr" | "rtl"
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en")
 
   useEffect(() => {
     // Load saved language from localStorage
-    const saved = localStorage.getItem("parksmart-language") as Language
+    const saved = localStorage.getItem("parksmart-language") as Language | null
     if (saved && saved in languages) {
       setLanguageState(saved)
     } else {
@@ -43,12 +56,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }
 
   const t = (key: TranslationKey): string => {
-    return translations[language][key] || translations.en[key] || key
+    return translations[language]?.[key] || translations.en[key] || key
   }
 
   const dir = languages[language].dir
 
-  return <LanguageContext.Provider value={{ language, setLanguage, t, dir }}>{children}</LanguageContext.Provider>
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t, dir }}>
+      {children}
+    </LanguageContext.Provider>
+  )
 }
 
 export function useLanguage() {
